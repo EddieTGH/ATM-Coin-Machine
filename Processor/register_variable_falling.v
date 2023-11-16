@@ -1,5 +1,5 @@
 module register_variable_falling #(parameter WIDTH=1)(data_writeReg, data_readReg, clk, write_enable, reset);
-    input clk, reset, write_enable, decode_result;
+    input clk, reset, write_enable;
     input [WIDTH-1:0] data_writeReg;
     output [WIDTH-1:0] data_readReg;
 

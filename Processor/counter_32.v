@@ -17,4 +17,4 @@ module counter_32(q, en, clk, clr);
         end
     endgenerate
 
-endmodule;
+endmodule

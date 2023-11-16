@@ -1,7 +1,7 @@
 module B_execute_bypass(IR_Execute, IR_Memory, IR_Writeback, xC_Execute, mC_Execute, wC_Memory, ctrl_writeEnable, final_ctrlWriteReg, out);
 input [31:0] IR_Execute, IR_Memory, IR_Writeback;
 input [10:0] xC_Execute;
-input [4:0] wC_Memory, wC_Writeback, final_ctrlWriteReg;
+input [4:0] wC_Memory, final_ctrlWriteReg;
 input ctrl_writeEnable, mC_Execute;
 output [1:0] out;
 

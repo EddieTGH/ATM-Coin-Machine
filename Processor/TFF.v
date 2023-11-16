@@ -12,4 +12,4 @@ module TFF(T, q, clk, en, clr);
     or OR1(w3, w1, w2);
 
     dffe_ref DFF(.q(q), .d(w3), .clk(clk), .en(en), .clr(clr));
-endmodule;
+endmodule

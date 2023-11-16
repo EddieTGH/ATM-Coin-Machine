@@ -1,6 +1,6 @@
 module A_execute_bypass(IR_Execute, IR_Memory, IR_Writeback, wC_Memory, ctrl_writeEnable, final_ctrlWriteReg, out);
 input [31:0] IR_Execute, IR_Memory, IR_Writeback;
-input [4:0] wC_Memory, wC_Writeback, final_ctrlWriteReg;
+input [4:0] wC_Memory, final_ctrlWriteReg;
 input ctrl_writeEnable;
 output [1:0] out;
 

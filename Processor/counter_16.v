@@ -16,4 +16,4 @@ module counter_16(q, en, clk, clr);
         end
     endgenerate
 
-endmodule;
+endmodule

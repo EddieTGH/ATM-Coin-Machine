@@ -24,8 +24,14 @@
  *
  **/
 
-module Wrapper (clock, reset);
-	input clock, reset;
+module Wrapper (
+	input clk_30mhz,
+	input BTNU,
+	input );
+
+	wire clock, reset;
+	assign clock = clk_30mhz;
+	assign reset = BTNU;
 
 	wire rwe, mwe;
 	wire[4:0] rd, rs1, rs2;
@@ -71,5 +77,9 @@ module Wrapper (clock, reset);
 		.addr(memAddr[11:0]), 
 		.dataIn(memDataIn), 
 		.dataOut(memDataOut));
+
+	keypad KEYPAD(
+
+	);
 
 endmodule

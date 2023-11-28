@@ -18,19 +18,22 @@ module keypad_tb;
         cols[2] = ~cols[2];
         cols[1] = ~cols[1];
         cols[0] = ~cols[0];
+        $display("hi");
         start = ~start;
+        cols[2] = ~cols[2];
         #200;
         start = ~start;
-
-        while (dataReady == 0) begin
-            if (rows[1] == 0) begin
-                cols[1] = ~cols[1];
-            end
-        end
 
         #100;
         $finish;
     end
+
+    // always @(rows[1]) begin
+    //     #1;
+    //     if (rows[1] == 0) begin
+    //       cols[1] = ~cols[1];
+    //     end
+    // end
 
     always @(dataReady) begin
         #1;

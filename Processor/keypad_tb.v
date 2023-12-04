@@ -13,27 +13,30 @@ module keypad_tb;
         cols[2] = 0;
         cols[1] = 0;
         cols[0] = 0;
-
         #200;
         cols[2] = ~cols[2];
         cols[1] = ~cols[1];
         cols[0] = ~cols[0];
-        $display("hi");
-        start = ~start;
-        cols[2] = ~cols[2];
-        #200;
-        start = ~start;
 
-        #100;
+        start = ~start;
+        $display("before");
+        #200;
+        $display("After");
+        start = ~start;
+        
+        cols[2] = ~cols[2];
+        $display("cols[2]: %b", cols[2]);
+        #200;
         $finish;
     end
 
-    // always @(rows[1]) begin
-    //     #1;
+    always @(rows[1]) begin
+         #1;
+         $display("hi");
     //     if (rows[1] == 0) begin
     //       cols[1] = ~cols[1];
     //     end
-    // end
+    end
 
     always @(dataReady) begin
         #1;

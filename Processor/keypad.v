@@ -1,53 +1,60 @@
-module keypad(start, dataReady, cols, rows, foundRow, foundCol);
-    input start;
+`timescale 1ns / 1ps
+module keypad(cols, rows, clock, buttonPressed);
     input [2:0] cols; // col3, col2, col1;
-    output [3:0] rows; // row4, row3, row2, row1;
-    output [31:0] foundRow, foundCol; 
-    output dataReady;
+    input clock;
+    output reg [3:0] rows; // row4, row3, row2, row1;
+    output [3:0] buttonPressed;
 
     integer i, j; //row, col
 
-    //reg getStart;
-    //assign getStart = start;
+    initial begin
+        i = 0;
+        j = 0;
+        rows[0] = 1'b1;
+        rows[1] = 1'b1;
+        rows[2] = 1'b1;
+        rows[3] = 1'b1;
+    end
 
-    reg getDataReady;
-    assign dataReady = getDataReady;
+    wire [11:0] keys;
+    assign keys[0] = i[1] & i[0] & ~cols[1];
+    assign keys[1] = ~i[1] & ~i[0] & ~cols[0];
+    assign keys[2] = ~i[1] & ~i[0] & ~cols[1];
+    assign keys[3] = ~i[1] & ~i[0] & ~cols[2];
+    assign keys[4] = ~i[1] & i[0] & ~cols[0];
+    assign keys[5] = ~i[1] & i[0] & ~cols[1];
+    assign keys[6] = ~i[1] & i[0] & ~cols[2];
+    assign keys[7] = i[1] & ~i[0] & ~cols[0];
+    assign keys[8] = i[1] & ~i[0] & ~cols[1];
+    assign keys[9] = i[1] & ~i[0] & ~cols[2];
+    assign keys[10] = i[1] & i[0] & ~cols[0]; //key *
+    assign keys[11] = i[1] & i[0] & ~cols[2]; //key #
 
-    reg [31:0] getFoundRow, getFoundCol;
-    assign foundRow = getFoundRow;
-    assign foundCol = getFoundCol;
+    priorityEncoder164 encoder(.i(keys), .out(buttonPressed));
 
-    reg [3:0] setRows;
-    assign rows = setRows;
+    wire clk100Hz;
+    keypadClockDiv clockDiv(.clk(clock), .clk_out(clk100Hz));
 
-    always @(start) begin
-        if (start == 1'b1) begin
-            getDataReady = 1'b0;
-            setRows[0] = 1'b1;
-            setRows[1] = 1'b1;
-            setRows[2] = 1'b1;
-            setRows[3] = 1'b1;
+    wire buttonNotPressed;
+    assign buttonNotPresssed = cols[2] & cols[1] & cols[0]; //need to debounce button release
 
-            while ((getDataReady == 1'b0)) begin
-                for (i = 0; i < 4; i = i + 1) begin
-                    if (getDataReady == 1'b0) begin
-                        setRows[i] = 1'b0; //set voltage low
-                        for (j = 0; j < 3; j = j + 1) begin
-                            if (getDataReady == 1'b0) begin
-                                if (cols[j] == 1'b0) begin //if find low voltage at a column, we know button pressed
-                                    getDataReady = 1'b1;
-                                    getFoundRow = i;
-                                    getFoundCol = j;
-                                end
-                            end
-                        end
-                        setRows[i] = 1'b1; //set voltage high
-                    end
+    always @(posedge clk100Hz) begin
+        if (buttonNotPresssed) begin //if we havent detected a button press go to next state
+            if (j == 2) begin
+                rows[i] = 1'b1; //set voltage high
+                if (i == 3) begin
+                    i = 0;
+                    j = 0;
+                end else begin
+                    j = 0;
+                    i = i + 1;
                 end
-
+                rows[i] = 1'b0; //set voltage low
+            end else begin
+                j = j + 1;
             end
-
         end
     end
+
 
 endmodule

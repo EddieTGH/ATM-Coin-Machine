@@ -5,11 +5,21 @@ nop
 init:
 j main
 
-handleKeyPress:
-
-
-getKey:
-#send voltage through row 1, row 2, row 3, row 4. Check each of col 1-3 pins. If 1, branch to a handler with
-#the arguments being the row and column where a 1 was found.
-
 main:
+addi $1, $1, 1
+addi $2, $2, 4
+
+waitKeyLoop:
+lw $3, 0($0) #get keypad data
+bne $2, $3, waitKeyLoop
+
+turnLedOn:
+sw $1, 16($0)
+sw $3, 18($0)
+
+finish:
+nop
+nop
+nop
+j finish
+

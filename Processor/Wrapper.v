@@ -94,7 +94,7 @@ module Wrapper (
 		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .LEDout(LED[13:0])); // LED Reg MAPPING
+		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB)); // LED Reg MAPPING
 						
 	// Processor Memory (RAM)
 	RAM ProcMem(.clk(clock), 
@@ -174,7 +174,8 @@ module Wrapper (
 		.rows(rows),
 		.clock(clock),
 		.buttonPressed(buttonPressed),
-		.acknowledgeKey(acknowledgeKey));
+		.acknowledgeKey(acknowledgeKey),
+		.LED(LED));
 
 	
 	//SEVEN SEGMENT STUFF

@@ -1,10 +1,11 @@
 `timescale 1ns / 1ps
-module keypad(cols, rows, clock, buttonPressed, acknowledgeKey);
+module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED);
     input [2:0] cols; // col3, col2, col1;
     input clock;
     input [31:0] acknowledgeKey;
     output reg [3:0] rows; // row4, row3, row2, row1;
     output [3:0] buttonPressed;
+    output [13:0] LED;
 
     integer i, j; //row, col
 
@@ -72,6 +73,8 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey);
         end
     end
     
-
+    assign LED[13] = debounce;
+    assign LED[12:9] = debounce ? 4'b1101 : encoderOut;
+    assign LED[8:0] = keys[8:0];
 
 endmodule

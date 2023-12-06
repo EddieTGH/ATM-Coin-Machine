@@ -2,7 +2,7 @@ module regfile (
 	clock,
 	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
 	ctrl_readRegA, ctrl_readRegB, data_writeReg,
-	data_readRegA, data_readRegB, LEDout //LED reg MAPPING
+	data_readRegA, data_readRegB
 );
 
 	input clock, ctrl_writeEnable, ctrl_reset;
@@ -10,9 +10,6 @@ module regfile (
 	input [31:0] data_writeReg;
 
 	output [31:0] data_readRegA, data_readRegB;
-	// LED Reg MAPPING
-	output [13:0] LEDout;
-	// LED Reg MAPPING
 
 	// add your code here
 
@@ -33,11 +30,6 @@ module regfile (
 		for (i = 1; i < 32; i = i + 1) begin
 			wire [31:0] w1;
 			register_regfile REG(.data_writeReg(data_writeReg), .data_readReg(w1), .clk(clock), .write_enable(ctrl_writeEnable), .decode_result(decode_out[i]), .reset(ctrl_reset));
-			// LED Reg MAPPING
-			if (i == 29) begin
-			     assign LEDout = w1[13:0];
-		    end
-			// LED Reg MAPPING
 			tristate_buffer TB(.in(w1), .enable(decode_out1[i]), .out(data_readRegA));
 			tristate_buffer TB1(.in(w1), .enable(decode_out2[i]), .out(data_readRegB));
 		end

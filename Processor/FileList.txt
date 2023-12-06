@@ -58,3 +58,5 @@ B_execute_bypass.v
 keypad.v
 keypadClockDiv.v
 sevenSegment.v
+sevenSegmentClockDiv.v
+beamBreak.v

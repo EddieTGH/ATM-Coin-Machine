@@ -2,6 +2,10 @@ module priorityEncoder164(i,out);
   input [11:0] i;
   output reg [3:0] out;
 
+  initial begin 
+    out = 4'b1101;  //13 is output when nothing pressed
+  end
+
   always @(i) begin
         if(|i[11:0]) begin
             // priority encoder
@@ -21,7 +25,7 @@ module priorityEncoder164(i,out);
             else
             out = 4'b0000;
         end else begin
-            out = 4'bzzzz;
+            out = 4'b1101; //13 is output when nothing pressed
         end
   end
 endmodule

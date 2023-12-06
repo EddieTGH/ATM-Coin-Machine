@@ -1,7 +1,8 @@
 `timescale 1ns / 1ps
-module keypad(cols, rows, clock, buttonPressed);
+module keypad(cols, rows, clock, buttonPressed, acknowledgeKey);
     input [2:0] cols; // col3, col2, col1;
     input clock;
+    input [31:0] acknowledgeKey;
     output reg [3:0] rows; // row4, row3, row2, row1;
     output [3:0] buttonPressed;
 
@@ -29,17 +30,22 @@ module keypad(cols, rows, clock, buttonPressed);
     assign keys[9] = i[1] & ~i[0] & ~cols[2];
     assign keys[10] = i[1] & i[0] & ~cols[0]; //key *
     assign keys[11] = i[1] & i[0] & ~cols[2]; //key #
+    
+    reg debounce = 0;
 
-    priorityEncoder164 encoder(.i(keys), .out(buttonPressed));
+    wire [3:0] encoderOut;
+    priorityEncoder164 encoder(.i(keys), .out(encoderOut));
+    assign buttonPressed = debounce ? 4'b1101 : encoderOut;
 
     wire clk100Hz;
     keypadClockDiv clockDiv(.clk(clock), .clk_out(clk100Hz));
 
     wire buttonNotPressed;
-    assign buttonNotPresssed = cols[2] & cols[1] & cols[0]; //need to debounce button release
+    assign buttonNotPressed = cols[2] & cols[1] & cols[0]; //need to debounce button release
+    
 
     always @(posedge clk100Hz) begin
-        if (buttonNotPresssed) begin //if we havent detected a button press go to next state
+        if (buttonNotPressed) begin //if we havent detected a button press go to next state
             if (j == 2) begin
                 rows[i] = 1'b1; //set voltage high
                 if (i == 3) begin
@@ -55,6 +61,17 @@ module keypad(cols, rows, clock, buttonPressed);
             end
         end
     end
+    
+    always @(posedge clock) begin
+        if (~buttonNotPressed) begin
+            if (acknowledgeKey[0] == 1) begin
+                debounce = 1'b1;
+                #1000000000;
+                debounce = 1'b0;
+            end
+        end
+    end
+    
 
 
 endmodule

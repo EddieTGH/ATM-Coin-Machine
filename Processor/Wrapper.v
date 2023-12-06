@@ -41,8 +41,8 @@ module Wrapper (
     output DP,
     output [3:0] AN,
     output [11:0] LED, //LED reg MAPPING
-	output reg LED12,
-	output reg LED13,
+	output LED12,
+	output LED13,
     output reg LED14,
     output reg LED15 
 	);

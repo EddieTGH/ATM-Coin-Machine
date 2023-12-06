@@ -17,6 +17,8 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
         rows[1] = 1'b1;
         rows[2] = 1'b1;
         rows[3] = 1'b1;
+        LED12 = 1'b0;
+        LED13 = 1'b0;
     end
 
     wire [11:0] keys;
@@ -64,20 +66,32 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
         end
     end
     
+    reg reset_counter = 0;
+
     always @(posedge clock) begin
-        if (~buttonNotPressed) begin
+        if ((~buttonNotPressed) & ~(debounce)) begin
             LED13 = 1'b1;
             if (acknowledgeKey[0] == 1) begin
                 LED12 = 1'b1;
+                reset_counter = 1'b1;
                 debounce = 1'b1;
-                #1000000000;
-                debounce = 1'b0;
+                #10;
+                reset_counter = 1'b0;
             end
+        end
+    end
+
+    wire debounceCounterDone;
+    debounce_counter DEBOUNCE(.clock(clock), .counter_done(debounceCounterDone), .reset(reset_counter));
+
+    always @(posedge debounceCounterDone) begin
+        if (debounce) begin
+            debounce = 1'b0;
         end
     end
     
     assign LED[11] = debounce;
     assign LED[10:7] = debounce ? 4'b1101 : encoderOut;
-    assign LED[6:0] = keys[8:0];
+    assign LED[6:0] = keys[6:0];
 
 endmodule

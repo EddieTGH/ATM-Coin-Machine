@@ -60,3 +60,4 @@ keypadClockDiv.v
 sevenSegment.v
 sevenSegmentClockDiv.v
 beamBreak.v
+debounce_counter.v

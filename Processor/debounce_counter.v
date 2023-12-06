@@ -8,9 +8,9 @@ module debounce_counter(clock, counter_done, reset);
 
     always @(posedge clock or posedge reset) begin
         if (reset) begin
-            counter_reg = 0;
+            counter_reg <= 0;
         end else begin
-            counter_reg = counter_reg + 1;
+            counter_reg <= counter_reg + 1;
         end
     end
 

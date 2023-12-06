@@ -40,7 +40,9 @@ module Wrapper (
     output CG,
     output DP,
     output [3:0] AN,
-    output [13:0] LED, //LED reg MAPPING
+    output [11:0] LED, //LED reg MAPPING
+	output reg LED12,
+	output reg LED13,
     output reg LED14,
     output reg LED15 
 	);
@@ -175,7 +177,9 @@ module Wrapper (
 		.clock(clock),
 		.buttonPressed(buttonPressed),
 		.acknowledgeKey(acknowledgeKey),
-		.LED(LED));
+		.LED(LED),
+		.LED12(LED12),
+		.LED13(LED13));
 
 	
 	//SEVEN SEGMENT STUFF

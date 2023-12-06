@@ -10,6 +10,8 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
 
     integer i, j; //row, col
 
+    reg debounce;
+    reg reset_counter;
     initial begin
         i = 0;
         j = 0;
@@ -19,6 +21,8 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
         rows[3] = 1'b1;
         LED12 = 1'b0;
         LED13 = 1'b0;
+        debounce = 1'b0;
+        reset_counter = 1'b0;
     end
 
     wire [11:0] keys;
@@ -34,8 +38,6 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
     assign keys[9] = i[1] & ~i[0] & ~cols[2];
     assign keys[10] = i[1] & i[0] & ~cols[0]; //key *
     assign keys[11] = i[1] & i[0] & ~cols[2]; //key #
-    
-    reg debounce = 0;
 
     wire [3:0] encoderOut;
     priorityEncoder164 encoder(.i(keys), .out(encoderOut));
@@ -66,7 +68,6 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
         end
     end
     
-    reg reset_counter = 0;
 
     always @(posedge clock) begin
         if ((~buttonNotPressed) & ~(debounce)) begin
@@ -86,6 +87,7 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
 
     always @(posedge debounceCounterDone) begin
         if (debounce) begin
+            LED12 = 1'b0;
             debounce = 1'b0;
         end
     end

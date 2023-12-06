@@ -11,7 +11,9 @@ module debounce_counter(clock, counter_done, reset);
     end
 
     always @(posedge clock) begin
-        counter_reg = counter_reg + 1;
+        if (~reset) begin
+            counter_reg = counter_reg + 1;
+        end
     end
 
 endmodule

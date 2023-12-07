@@ -61,8 +61,10 @@ bne $13, $2, _recordNum # if GOT A NUMBER, branch
 j _waitKeyLoop # else, keep checking for key
 
 _recordNum:
+sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 1
 sw $2, 0($21) # set first key pressed
 sub $21, $21, $1 # subtract 1 from seven segment memory address storing at
+sw $0, 22($0) # turn off acknowledge key: store 0 into memory 1
 bne $21, $17, _waitKeyLoop # if memory address is not 21, go back to checking for key
 
 _appendTogether: # if 4 digits have been collected

@@ -135,7 +135,7 @@ _splitDigitsLoop:
 div $7, $2, $6 
 mul $8, $7, $6
 sub $9, $2, $8 # the digit
-lw $9, 0($5)
+sw $9, 0($5)
 add $2, $7, $0
 
 addi $3, $3, 1

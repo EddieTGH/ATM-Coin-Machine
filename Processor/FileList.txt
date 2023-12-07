@@ -21,6 +21,7 @@ get_Exception_rstatus.v
 mux_2.v
 mux_4.v
 mux_8.v
+mux_16.v
 MWLatch.v
 pcPlus1.v
 processor.v
@@ -54,3 +55,9 @@ stallUnit.v
 data_mem_d_bypass.v
 A_execute_bypass.v
 B_execute_bypass.v
+keypad.v
+keypadClockDiv.v
+sevenSegment.v
+sevenSegmentClockDiv.v
+beamBreak.v
+debounce_counter.v

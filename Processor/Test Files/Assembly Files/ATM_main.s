@@ -75,9 +75,9 @@ lw $11, 19($0) # $11 = get 3rd most significant digit
 lw $12, 20($0) # $12 = get 2nd most significant digit
 lw $14, 21($0) # $14 = get most significant digit
 
-addi $17, $17, 10 # 17 = 10
-addi $21, $21, 100 # 21 = 100
-addi $22, $22, 1000 # 22 = 1000
+addi $17, $0, 10 # 17 = 10
+addi $21, $0, 100 # 21 = 100
+addi $22, $0, 1000 # 22 = 1000
 
 mul $17, $11, $17 # $17 = 3rd most significant digit * 10
 mul $21, $12, $21 # $21 = 2nd most significant digit * 100
@@ -211,10 +211,11 @@ jr $31
 
 
 withdraw: #a0 = pin to withdraw from
-addi $29, $29, -3
+addi $29, $29, -4
 sw $2, 0($29)
-sw $3, 0($29)
-sw $4, 0($29)
+sw $3, 1($29)
+sw $4, 2($29)
+sw $31, 3($29)
 
 addi $3, $0, 750
 sw $3, 0($26) #test set their balance
@@ -230,9 +231,10 @@ sw $4, 0($26) #set balance
 jal displayBalance #a0 hasnt been changes, still pin to display
 
 lw $2, 0($29)
-lw $3, 0($29)
-lw $4, 0($29)
-addi $29, $29, 3 
+lw $3, 1($29)
+lw $4, 2($29)
+lw $31, 3($29)
+addi $29, $29, 4 
 jr $31
 
 

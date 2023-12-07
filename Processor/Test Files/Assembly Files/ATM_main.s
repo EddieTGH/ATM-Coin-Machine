@@ -41,7 +41,7 @@ j main
 # j startBeamBreak
 
 
-collect4DigitNumber: #a0 = memory address to store 4 digit number at
+collect4DigitNumber: # return final result as $v0 ($28)
 addi $29, $29, -8
 sw $2, 0($29)
 sw $17, 1($29)
@@ -154,24 +154,81 @@ addi $29, $29, 8
 jr $31
 
 
-depositOrWithdraw: #TODO, returns 0 if deposit 1 if withdraw
-addi $11, $0, 25
-sw $11, 0($26)
+getDepositWithdrawButtons: #returns 0 if deposit 1 if withdraw
+addi $29, $29, -3
+sw $2, 0($29)
+sw $3, 1($29)
+sw $4, 2($29)
+
+addi $3, $0, 11 # The number for deposit
+addi $4, $0, 10 # The number for withdraw
+_waitKeyLoop3:
+lw $2, 0($0) # $2 = keypad data
+blt $2, $4, _waitKeyLoop3 
+blt $2, $3, _gotWith # is a withdraw
+bne $2, $13, _gotDep # is a deposit
+j _waitKeyLoop3
+
+_gotDep:
+sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 1
 addi $28, $0, 0
+nop
+sw $0, 22($0) # turn off acknowledge key: store 0 into memory 1
+j _fin
+
+_gotWith:
+sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 1
+addi $28, $0, 1
+nop
+sw $0, 22($0) # turn off acknowledge key: store 0 into memory 1
+
+_fin:
+lw $2, 0($29)
+lw $3, 1($29)
+lw $4, 2($29)
+addi $29, $29, 3
 jr $31
+
+
+depositOrWithdraw: #returns 0 if deposit 1 if withdraw, turn on LED
+addi $29, $29, 0
+
+sw $1, 16($0) # turn LED 14 on to indicate waiting deposit or withdraw selection
+jal getDepositWithdrawButtons
+sw $0, 16($0) # turn LED 14 off 
+
+addi $29, $29, 0
+jr $31
+
 
 
 deposit: #TODO
-_waitKeyLoop2:
-lw $12, 0($0) # $2 = keypad data
-bne $13, $12, _test2 # if GOT A NUMBER, branch
-j _waitKeyLoop2 # else, keep checking for key
-_test2:
-jal displayBalance
 jr $31
 
 
-withdraw: #TODO
+withdraw: #a0 = pin to withdraw from
+addi $29, $29, -3
+sw $2, 0($29)
+sw $3, 0($29)
+sw $4, 0($29)
+
+addi $3, $0, 750
+sw $3, 0($26) #test set their balance
+jal displayBalance
+
+lw $2, 0($26) # current balance
+sw $1, 17($0) # turn LED 15 on to indicate waiting for pin
+jal collect4DigitNumber
+sw $0, 17($0) # turn LED 15 off to indicate done
+sub $4, $2, $28 #subtract amount to withdraw from current balance
+sw $4, 0($26) #set balance
+
+jal displayBalance #a0 hasnt been changes, still pin to display
+
+lw $2, 0($29)
+lw $3, 0($29)
+lw $4, 0($29)
+addi $29, $29, 3 
 jr $31
 
 
@@ -190,7 +247,6 @@ jal displayBalance # display current balance for pin
 
 #MAKE THIS A LOOP
 _loopDepositWithdraw:
-add $26, $2, 0
 jal depositOrWithdraw # ask user if want to deposit or withdraw and then collect value to deposit or withdraw
 
 bne $28, $0, _withdrawing # $v0 = 0 if deposit 1 if withdraw
@@ -199,6 +255,7 @@ jal deposit
 j _finishDepositWithdraw
 
 _withdrawing:
+addi $26, $2, 0 # $26 (a0) for withdraw is the pin
 jal withdraw
 
 _finishDepositWithdraw:

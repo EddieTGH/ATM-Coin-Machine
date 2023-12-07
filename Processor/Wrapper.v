@@ -44,7 +44,9 @@ module Wrapper (
 	output LED12,
 	output LED13,
     output reg LED14,
-    output reg LED15 
+    output reg LED15,
+    input  SW0, //switches as SERVO input
+    output JC1, JC2, JC3, JC4 //Servo PWM signal 
 	);
 
 	wire clock, reset;
@@ -68,7 +70,7 @@ module Wrapper (
 
 
 	// ADD YOUR MEMORY FILE HERE
-	localparam INSTR_FILE = "keypad_testing";
+	localparam INSTR_FILE = "testServo";
 	
 	// Main Processing Unit
 	processor CPU(.clock(clock), .reset(reset), 
@@ -141,6 +143,10 @@ module Wrapper (
 	reg [31:0] sevenSegment2 = 0; 	  // address 20
 	reg [31:0] sevenSegment3 = 0; 	  // address 21
 	reg [31:0] acknowledgeKey = 0;    // address 22
+	reg [31:0] servoControl_1 = 0;    // address 23
+	reg [31:0] servoControl_5 = 0;    // address 24
+	reg [31:0] servoControl_10 = 0;    // address 25
+	reg [31:0] servoControl_25 = 0;    // address 26
 	reg [31:0] defaultWrite = 0; 	  // address default
 
 
@@ -155,6 +161,10 @@ module Wrapper (
 					5'b10100: sevenSegment2 <= memDataIn;              //3rd digit sw digit val to memory 20
 					5'b10101: sevenSegment3 <= memDataIn;              //4th digit sw digit val to memory 21
 					5'b10110: acknowledgeKey <= memDataIn;              //memory 22
+					5'b10111: servoControl_1 <= memDataIn;              //1st servo control sw ctrl val to memory 23
+					5'b11000: servoControl_5 <= memDataIn;              //1st servo control sw ctrl val to memory 24
+					5'b11001: servoControl_10 <= memDataIn;              //1st servo control sw ctrl val to memory 25
+					5'b11010: servoControl_25 <= memDataIn;              //1st servo control sw ctrl val to memory 26
 					default: defaultWrite <= 0;
 				endcase
 			end 
@@ -198,6 +208,15 @@ module Wrapper (
     	.DP(DP),
     	.AN(AN),
 		.clock(clock));
+    
+    //SERVO STUFF
+    wire clear;
+    assign clear = 1'b0;
+    Servo_interface servo1 (.servoCtrl(servoControl_1), .clr(clear), .clk(clock), .JC_Signal(JC1) );
+    Servo_interface servo5 (.servoCtrl(servoControl_5), .clr(clear), .clk(clock), .JC_Signal(JC2) );
+    Servo_interface servo10 (.servoCtrl(servoControl_10), .clr(clear), .clk(clock), .JC_Signal(JC3) );
+    Servo_interface servo25 (.servoCtrl(servoControl_25), .clr(clear), .clk(clock), .JC_Signal(JC4) );
+    //Servo_interface servo1 (.SW(SW0), .clr(clear), .clk(clock), .JC_Signal(JC1) );
 
 
 	//BEAM BREAK STUFF

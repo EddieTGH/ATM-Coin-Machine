@@ -37,6 +37,6 @@ module angle_decoder(
         // trial and error to get the 0
         // and 360 values and created an equation
         // based on those two points. 
-        value = (10'd944)*(angle)+ 16'd60000;
+        value = (10'd158)*(angle)+ 16'd16200;
     end
 endmodule

@@ -23,26 +23,35 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 module Servo_interface (
-    input [15:0] SW,
+    input [31:0] servoCtrl,
+    input SW,
+    // input [15:0] SW, 
     input clr,
     input clk,
-    output JC1
+    output JC_Signal
     );
     
     wire [19:0] A_net;
     wire [19:0] value_net;
     wire [8:0] angle_net;
     wire PWM;
-    assign JC1 = PWM;
+    assign JC_Signal = PWM;
     // reg pwm 
     
     
     // Convert the incoming switch value
     // to an angle.
-    sw_to_angle converter(
-        .sw(SW),
-        .angle(angle_net)
-        );
+//    sw_to_angle converter(
+//        .sw(SW),
+//        .angle(angle_net)
+//        );
+    
+    wire [31:0] inServoControl;
+    //assign inServoControl = { 31'b0000000000000000000000000000000, SW};
+    assign inServoControl = servoCtrl;
+    
+    //convert the incoming servocontrol (0,1) to an angle
+    servoControl_to_Angle servoControlToAngle (.servoControl(inServoControl), .angle(angle_net) );
     
     // Convert the angle value to 
     // the constant value needed for the PWM.

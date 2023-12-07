@@ -57,10 +57,12 @@ addi $17, $17, 17 # $17 = 17 (used for final memory address of seven segment sto
 
 _waitKeyLoop:
 lw $2, 0($0) # $2 = keypad data
+sw $1, 23($0) #servo store 1
 bne $13, $2, _recordNum # if GOT A NUMBER, branch
 j _waitKeyLoop # else, keep checking for key
 
 _recordNum:
+sw $0, 23($0) #servo store 0
 sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 1
 sw $2, 0($21) # set first key pressed
 sub $21, $21, $1 # subtract 1 from seven segment memory address storing at
@@ -191,13 +193,15 @@ jr $31
 
 
 depositOrWithdraw: #returns 0 if deposit 1 if withdraw, turn on LED
-addi $29, $29, 0
+addi $29, $29, -1
+sw $31, 0($29)
 
 sw $1, 16($0) # turn LED 14 on to indicate waiting deposit or withdraw selection
 jal getDepositWithdrawButtons
 sw $0, 16($0) # turn LED 14 off 
 
-addi $29, $29, 0
+lw $31, 0($29)
+addi $29, $29, 1
 jr $31
 
 

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenRun Id="impl_1" LaunchPart="xc7a35tcpg236-1" LaunchTime="1454461510">
+  <File Type="OPT-DCP" Name="Servo_interface_opt.dcp"/>
+  <File Type="RUN-CONSTRS" Name="$PDATADIR/runs/impl_1/constrs_in.xml"/>
+  <File Type="RUN-SRCS" Name="$PDATADIR/runs/impl_1/sources.xml"/>
+  <File Type="ROUTE-DCP" Name="Servo_interface_routed.dcp"/>
+  <File Type="PA-TCL" Name="Servo_interface.tcl"/>
+  <File Type="RUN-STRAT" Name="$PDATADIR/runs/impl_1/impl_1.psg"/>
+  <File Type="OPT-DRC" Name="Servo_interface_drc_opted.rpt"/>
+  <File Type="INIT-TIMING" Name="Servo_interface_timing_summary_init.rpt"/>
+  <File Type="OPT-TIMING" Name="Servo_interface_timing_summary_opted.rpt"/>
+  <File Type="OPT-HWDEF" Name="Servo_interface.hwdef"/>
+  <File Type="PWROPT-DCP" Name="Servo_interface_pwropt.dcp"/>
+  <File Type="PWROPT-DRC" Name="Servo_interface_drc_pwropted.rpt"/>
+  <File Type="PWROPT-TIMING" Name="Servo_interface_timing_summary_pwropted.rpt"/>
+  <File Type="PLACE-DCP" Name="Servo_interface_placed.dcp"/>
+  <File Type="PLACE-IO" Name="Servo_interface_io_placed.rpt"/>
+  <File Type="PLACE-CLK" Name="Servo_interface_clock_utilization_placed.rpt"/>
+  <File Type="PLACE-UTIL" Name="Servo_interface_utilization_placed.rpt"/>
+  <File Type="PLACE-UTIL-PB" Name="Servo_interface_utilization_placed.pb"/>
+  <File Type="PLACE-CTRL" Name="Servo_interface_control_sets_placed.rpt"/>
+  <File Type="PLACE-SIMILARITY" Name="Servo_interface_incremental_reuse_placed.rpt"/>
+  <File Type="PLACE-PRE-SIMILARITY" Name="Servo_interface_incremental_reuse_pre_placed.rpt"/>
+  <File Type="PLACE-TIMING" Name="Servo_interface_timing_summary_placed.rpt"/>
+  <File Type="POSTPLACE-PWROPT-DCP" Name="Servo_interface_postplace_pwropt.dcp"/>
+  <File Type="POSTPLACE-PWROPT-TIMING" Name="Servo_interface_timing_summary_postplace_pwropted.rpt"/>
+  <File Type="PHYSOPT-DCP" Name="Servo_interface_physopt.dcp"/>
+  <File Type="RDI-RDI" Name="Servo_interface.vdi"/>
+  <File Type="PHYSOPT-DRC" Name="Servo_interface_drc_physopted.rpt"/>
+  <File Type="PHYSOPT-TIMING" Name="Servo_interface_timing_summary_physopted.rpt"/>
+  <File Type="ROUTE-DRC" Name="Servo_interface_drc_routed.rpt"/>
+  <File Type="ROUTE-DRC-PB" Name="Servo_interface_drc_routed.pb"/>
+  <File Type="ROUTE-PWR" Name="Servo_interface_power_routed.rpt"/>
+  <File Type="ROUTE-PWR-SUM" Name="Servo_interface_power_summary_routed.pb"/>
+  <File Type="ROUTE-STATUS" Name="Servo_interface_route_status.rpt"/>
+  <File Type="ROUTE-STATUS-PB" Name="Servo_interface_route_status.pb"/>
+  <File Type="ROUTE-TIMINGSUMMARY" Name="Servo_interface_timing_summary_routed.rpt"/>
+  <File Type="ROUTE-TIMING-PB" Name="Servo_interface_timing_summary_routed.pb"/>
+  <File Type="ROUTE-TIMING-RPX" Name="Servo_interface_timing_summary_routed.rpx"/>
+  <File Type="ROUTE-SIMILARITY" Name="Servo_interface_incremental_reuse_routed.rpt"/>
+  <File Type="ROUTE-CLK" Name="Servo_interface_clock_utilization_routed.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-DCP" Name="Servo_interface_postroute_physopt.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="Servo_interface_timing_summary_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="Servo_interface_timing_summary_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="Servo_interface_timing_summary_postroute_physopted.rpx"/>
+  <File Type="BG-BIT" Name="Servo_interface.bit"/>
+  <File Type="BG-BIN" Name="Servo_interface.bin"/>
+  <File Type="BITSTR-MSK" Name="Servo_interface.msk"/>
+  <File Type="BITSTR-RBT" Name="Servo_interface.rbt"/>
+  <File Type="BITSTR-NKY" Name="Servo_interface.nky"/>
+  <File Type="BITSTR-BMM" Name="Servo_interface_bd.bmm"/>
+  <File Type="BITSTR-MMI" Name="Servo_interface.mmi"/>
+  <File Type="BITSTR-SYSDEF" Name="Servo_interface.sysdef"/>
+  <File Type="BG-BGN" Name="Servo_interface.bgn"/>
+  <File Type="BG-DRC" Name="Servo_interface.drc"/>
+  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+  <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1">
+    <Filter Type="Srcs"/>
+    <File Path="$PSRCDIR/sources_1/new/sw_to_angle.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/counter.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/comparator.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/new/angle_decoder.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PPRDIR/Servo_interface.v">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="DesignMode" Val="RTL"/>
+      <Option Name="TopModule" Val="Servo_interface"/>
+      <Option Name="TopAutoSet" Val="TRUE"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1">
+    <Filter Type="Constrs"/>
+    <File Path="$PSRCDIR/constrs_1/new/pwm.xdc">
+      <FileInfo>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="ConstrsType" Val="XDC"/>
+    </Config>
+  </FileSet>
+  <Strategy Version="1" Minor="2">
+    <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2015"/>
+    <Step Id="init_design"/>
+    <Step Id="opt_design"/>
+    <Step Id="power_opt_design"/>
+    <Step Id="place_design"/>
+    <Step Id="post_place_power_opt_design"/>
+    <Step Id="phys_opt_design"/>
+    <Step Id="route_design"/>
+    <Step Id="post_route_phys_opt_design"/>
+    <Step Id="write_bitstream"/>
+  </Strategy>
+</GenRun>

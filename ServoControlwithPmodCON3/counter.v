@@ -35,8 +35,9 @@ module counter (
 	    // value has been reached, set count to 0.
 	    // This constant depends on the refresh rate required by the
 	    // servo motor you are using. This creates a refresh rate
-	    // of 10ms. 100MHz/(1/10ms) or (system clock)/(1/(Refresh Rate)).
-		if (clr == 1'b1 || count == 20'd1000000)
+	    // of 10ms. 100MHz/(1/10ms) = 100 MHz / 100 seconds = 1 Mhz = 1000000
+	    // or (system clock)/(1/(Refresh Rate)). 30 MHz / (1/20ms) = 30 MHz / 50 seconds = 0.6 Mhz = 600000
+		if (clr == 1'b1 || count == 20'd600000)
 			begin
 			count <= 20'b0;
 			end

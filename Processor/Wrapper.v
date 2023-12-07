@@ -44,7 +44,9 @@ module Wrapper (
 	output LED12,
 	output LED13,
     output reg LED14,
-    output reg LED15 
+    output reg LED15,
+    input [15:0] SW, //switches as SERVO input
+    output JC1 //Servo PWM signal 
 	);
 
 	wire clock, reset;
@@ -198,6 +200,11 @@ module Wrapper (
     	.DP(DP),
     	.AN(AN),
 		.clock(clock));
+    
+    //SERVO STUFF
+    wire clear;
+    assign clear = 1'b0;
+    Servo_interface servo1 (.SW(SW), .clr(clear), .clk(clock), .JC1(JC1) );
 
 
 	//BEAM BREAK STUFF

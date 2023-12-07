@@ -22,22 +22,25 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-
 module Servo_interface (
-    input [15:0] sw,
+    input [15:0] SW,
     input clr,
     input clk,
-    output PWM
+    output JC1
     );
     
     wire [19:0] A_net;
     wire [19:0] value_net;
     wire [8:0] angle_net;
+    wire PWM;
+    assign JC1 = PWM;
+    // reg pwm 
+    
     
     // Convert the incoming switch value
     // to an angle.
     sw_to_angle converter(
-        .sw(sw),
+        .sw(SW),
         .angle(angle_net)
         );
     

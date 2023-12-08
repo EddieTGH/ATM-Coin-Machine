@@ -4,41 +4,80 @@ nop
 nop
 init:
 j main
-#j startBeamBreak
 
-# startBeamBreak:
-# #Memory 1: beambroken1
-# #Memory 2: beambroken5
-# #Memory 3: beambroken10
-# #Memory 4: beambroken25
-# lw $14, 1($0) # $14 = beambroken1
-# lw $15, 2($0) # $15 = beambroken5
-# lw $16, 3($0) # $16 = beambroken10
-# lw $17, 4($0) # $17 = beambroken25
-# bne $14, $0, oneCent # if beambroken1 is not 0, go to oneCent
-# bne $15, $0, fiveCent # if beambroken5 is not 0, go to fiveCent
-# bne $16, $0, tenCent # if beambroken10 is not 0, go to tenCent
-# bne $17, $0, twentyFiveCent # if beambroken25 is not 0, go to twentyFiveCent
 
-# oneCent: #add 1 to accountBalance (memory 15)
-# lw $22, 15($0) # $22 = accountBalance
-# addi $22, $22, 1 # $22 = accountBalance + 1
-# j startBeamBreak
+startBeamBreak: #a0 is pin to deposit to 
+addi $29, $29, -8
+sw $31, 0($29)
+sw $2, 1($29)
+sw $3, 2($29)
+sw $4, 3($29)
+sw $5, 4($29)
+sw $6, 5($29)
+sw $7, 6($29)
+sw $8, 7($29)
 
-# fiveCent: #add 5 to accountBalance (memory 15)
-# lw $22, 15($0) # $22 = accountBalance   
-# addi $22, $22, 5 # $22 = accountBalance + 5
-# j startBeamBreak
+lw $6, 0($26) # $6 = current accountBalance
+addi $7, $0, 11 # The number for deposit
 
-# tenCent: #add 10 to accountBalance (memory 15) 
-# lw $22, 15($0) # $22 = accountBalance
-# addi $22, $22, 10 # $22 = accountBalance + 10
-# j startBeamBreak
+sw $1, 16($0)
 
-# twentyFiveCent: #add 25 to accountBalance (memory 15)
-# lw $22, 15($0) # $22 = accountBalance
-# addi $22, $22, 25 # $22 = accountBalance + 25
-# j startBeamBreak
+_beamBreakLoop:
+lw $8, 0($0) # $8 = keypad data
+blt $8, $7, _beamCheck 
+bne $8, $13, _exitDeposit # clicked the deposit
+
+_beamCheck:
+lw $2, 1($0) # $2 = beambroken1
+lw $3, 2($0) # $3 = beambroken5
+lw $4, 3($0) # $4 = beambroken10
+lw $5, 4($0) # $5 = beambroken25
+bne $2, $0, _oneCent # if beambroken1 is not 0, go to oneCent
+bne $3, $0, _fiveCent # if beambroken5 is not 0, go to fiveCent
+bne $4, $0, _tenCent # if beambroken10 is not 0, go to tenCent
+bne $5, $0, _twentyFiveCent # if beambroken25 is not 0, go to twentyFiveCent
+j _beamBreakLoop
+
+_oneCent: #add 1 to accountBalance 
+sw $1, 27($0) # acknowledge that beam break has been read: store 1 into memory 27
+addi $6, $6, 1 # $6 = accountBalance + 1
+j _gotCoin
+
+_fiveCent: #add 5 to accountBalance 
+sw $1, 27($0) # acknowledge that beam break has been read: store 1 into memory 27
+addi $6, $6, 5 # $6 = accountBalance + 5
+j _gotCoin
+
+_tenCent: #add 10 to accountBalance 
+sw $1, 27($0) # acknowledge that beam break has been read: store 1 into memory 27
+addi $6, $6, 10 # $6 = accountBalance + 10
+j _gotCoin
+
+_twentyFiveCent: #add 25 to accountBalance 
+sw $1, 27($0) # acknowledge that beam break has been read: store 1 into memory 27
+addi $6, $6, 25 # $6 = accountBalance + 25
+
+_gotCoin:
+sw $6, 0($26) # store new current balance at pin $a0
+sw $0, 27($0) # turn off acknowledge beam break: store 0 into memory 27
+jal displayBalance # $26 a0 is still the pin who we are working with
+j _beamBreakLoop
+
+_exitDeposit:
+sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 22
+nop
+sw $0, 22($0) # finish that key has been read: store 0 into memory 22
+sw $0, 16($0)
+lw $31, 0($29)
+lw $2, 1($29)
+lw $3, 2($29)
+lw $4, 3($29)
+lw $5, 4($29)
+lw $6, 5($29)
+lw $7, 6($29)
+lw $8, 7($29)
+addi $29, $29, 8
+jr $31
 
 
 collect4DigitNumber: # return final result as $v0 ($28)
@@ -172,17 +211,17 @@ bne $2, $13, _gotDep # is a deposit
 j _waitKeyLoop3
 
 _gotDep:
-sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 1
+sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 22
 addi $28, $0, 0
 nop
-sw $0, 22($0) # turn off acknowledge key: store 0 into memory 1
+sw $0, 22($0) # turn off acknowledge key: store 0 into memory 22
 j _fin
 
 _gotWith:
-sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 1
+sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 22
 addi $28, $0, 1
 nop
-sw $0, 22($0) # turn off acknowledge key: store 0 into memory 1
+sw $0, 22($0) # turn off acknowledge key: store 0 into memory 22
 
 _fin:
 lw $2, 0($29)
@@ -206,7 +245,14 @@ jr $31
 
 
 
-deposit: #TODO
+deposit: #a0 = pin to deposit to
+addi $29, $29, -1
+sw $31, 0($29)
+
+jal startBeamBreak
+
+lw $31, 0($29)
+addi $29, $29, 1
 jr $31
 
 
@@ -257,6 +303,7 @@ jal depositOrWithdraw # ask user if want to deposit or withdraw and then collect
 
 bne $28, $0, _withdrawing # $v0 = 0 if deposit 1 if withdraw
 _depositing:
+sw $1, 17($0)
 jal deposit
 j _finishDepositWithdraw
 

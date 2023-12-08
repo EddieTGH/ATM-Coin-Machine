@@ -40,9 +40,7 @@ module Wrapper (
     output CG,
     output DP,
     output [3:0] AN,
-    output [11:0] LED, //LED reg MAPPING
-	output LED12,
-	output LED13,
+    output [13:0] LED, //LED reg MAPPING
     output reg LED14,
     output reg LED15,
     input  SW0, //switches as SERVO input
@@ -147,6 +145,7 @@ module Wrapper (
 	reg [31:0] servoControl_5 = 0;    // address 24
 	reg [31:0] servoControl_10 = 0;    // address 25
 	reg [31:0] servoControl_25 = 0;    // address 26
+	reg [31:0] acknowledgeBeam = 0;   // address 27
 	reg [31:0] defaultWrite = 0; 	  // address default
 
 
@@ -160,11 +159,12 @@ module Wrapper (
 					5'b10011: sevenSegment1 <= memDataIn;              //2nd digit sw digit val to memory 19
 					5'b10100: sevenSegment2 <= memDataIn;              //3rd digit sw digit val to memory 20
 					5'b10101: sevenSegment3 <= memDataIn;              //4th digit sw digit val to memory 21
-					5'b10110: acknowledgeKey <= memDataIn;              //memory 22
+					5'b10110: acknowledgeKey <= memDataIn;              //acknowlege keypad press memory 22
 					5'b10111: servoControl_1 <= memDataIn;              //1st servo control sw ctrl val to memory 23
 					5'b11000: servoControl_5 <= memDataIn;              //1st servo control sw ctrl val to memory 24
 					5'b11001: servoControl_10 <= memDataIn;              //1st servo control sw ctrl val to memory 25
 					5'b11010: servoControl_25 <= memDataIn;              //1st servo control sw ctrl val to memory 26
+					5'b11011: acknowledgeBeam <= memDataIn;              //acknowledge beam break sensor memory 27
 					default: defaultWrite <= 0;
 				endcase
 			end 
@@ -187,9 +187,7 @@ module Wrapper (
 		.clock(clock),
 		.buttonPressed(buttonPressed),
 		.acknowledgeKey(acknowledgeKey),
-		.LED(LED),
-		.LED12(LED12),
-		.LED13(LED13));
+		.LED(LED[9:0]));
 
 	
 	//SEVEN SEGMENT STUFF
@@ -221,25 +219,20 @@ module Wrapper (
 
 	//BEAM BREAK STUFF
 	
-	//penny
 	beamBreak BEAMBREAK0(
-		.beamBroken(beamBroken1),
-		.reading(JB1));
+		.beamBroken1(beamBroken1),
+		.reading1(JB1), //penny
+		.beamBroken2(beamBroken5),
+		.reading2(JB2), //nickel
+		.beamBroken3(beamBroken10),
+		.reading3(JB3), //dime
+		.beamBroken4(beamBroken25),
+		.reading4(JB4), //quarter
+		.clock(clock),
+		.acknowledgeBeam(acknowledgeBeam),
+		.LED(LED[13:10]));
 
-    //nickel
-    beamBreak BEAMBREAK1(
-		.beamBroken(beamBroken5),
-		.reading(JB2));
-		
-	//dime
-	beamBreak BEAMBREAK2(
-		.beamBroken(beamBroken10),
-		.reading(JB3));
-		
-	//quarter
-	beamBreak BEAMBREAK3(
-		.beamBroken(beamBroken25),
-		.reading(JB4));
+
 
 endmodule
 

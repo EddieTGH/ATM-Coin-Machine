@@ -1,17 +1,14 @@
 `timescale 1ns / 1ps
-module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED13);
+module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED);
     input [2:0] cols; // col3, col2, col1;
     input clock;
     input [31:0] acknowledgeKey;
     output reg [3:0] rows; // row4, row3, row2, row1;
     output [3:0] buttonPressed;
-    output [11:0] LED;
-    output reg LED12, LED13;
+    output [9:0] LED;
 
     integer i, j; //row, col
 
-    reg debounce;
-    reg reset_counter;
     initial begin
         i = 0;
         j = 0;
@@ -19,10 +16,6 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
         rows[1] = 1'b1;
         rows[2] = 1'b1;
         rows[3] = 1'b1;
-        LED12 = 1'b0;
-        LED13 = 1'b0;
-        debounce = 1'b0;
-        reset_counter = 1'b0;
     end
 
     wire [11:0] keys;
@@ -39,15 +32,18 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
     assign keys[10] = i[1] & i[0] & ~cols[0]; //key *
     assign keys[11] = i[1] & i[0] & ~cols[2]; //key #
 
+    wire buttonNotPressed;
+    assign buttonNotPressed = cols[2] & cols[1] & cols[0]; //need to debounce button release
+
+    wire debounce; //debounce stuff
+    debounceUnit DEB(.buttonNotPressed(buttonNotPressed), .acknowledge(acknowledgeKey[0]), .clock(clock), .debounce(debounce));
+
     wire [3:0] encoderOut;
     priorityEncoder164 encoder(.i(keys), .out(encoderOut));
     assign buttonPressed = debounce ? 4'b1101 : encoderOut;
 
     wire clk100Hz;
     keypadClockDiv clockDiv(.clk(clock), .clk_out(clk100Hz));
-
-    wire buttonNotPressed;
-    assign buttonNotPressed = cols[2] & cols[1] & cols[0]; //need to debounce button release
     
 
     always @(posedge clk100Hz) begin
@@ -68,28 +64,6 @@ module keypad(cols, rows, clock, buttonPressed, acknowledgeKey, LED, LED12, LED1
         end
     end
     
-    wire debounceCounterDone;
-
-    always @(posedge clock or posedge debounceCounterDone) begin
-        if (debounceCounterDone & debounce) begin
-            LED12 = 1'b1;
-            debounce = 1'b0;
-        end else if ((~buttonNotPressed) & ~(debounce)) begin
-            LED13 = 1'b1;
-            if (acknowledgeKey[0] == 1) begin
-                reset_counter = 1'b1;
-                debounce = 1'b1;
-                #10;
-                reset_counter = 1'b0;
-            end
-        end
-    end
-
-    debounce_counter DEBOUNCE(.clock(clock), .counter_done(debounceCounterDone), .reset(reset_counter));
-
-    
-    assign LED[11] = debounce;
-    assign LED[10:7] = debounce ? 4'b1101 : encoderOut;
-    assign LED[6:0] = keys[6:0];
+    assign LED = keys[9:0];
 
 endmodule

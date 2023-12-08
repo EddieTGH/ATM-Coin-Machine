@@ -257,11 +257,11 @@ jr $31
 
 
 servoControl: #a0 ($26) = type of coin (0 = p, 1 = n, 2 = d, 3 = q)
-addi $29, $29, 
+addi $29, $29, -1
 sw $31, 0($29)
 
 lw $31, 0($29)
-addi $29, $29, 
+addi $29, $29, 1
 jr $31
 
 

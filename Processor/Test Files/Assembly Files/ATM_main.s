@@ -256,6 +256,15 @@ addi $29, $29, 1
 jr $31
 
 
+servoControl: #a0 ($26) = type of coin (0 = p, 1 = n, 2 = d, 3 = q)
+addi $29, $29, 
+sw $31, 0($29)
+
+lw $31, 0($29)
+addi $29, $29, 
+jr $31
+
+
 withdraw: #a0 = pin to withdraw from
 addi $29, $29, -4
 sw $2, 0($29)
@@ -263,18 +272,68 @@ sw $3, 1($29)
 sw $4, 2($29)
 sw $31, 3($29)
 
-addi $3, $0, 750
-sw $3, 0($26) #test set their balance
-jal displayBalance
+#addi $3, $0, 750
+#sw $3, 0($26) #test set their balance
+jal displayBalance # pin hasnt changed
 
+addi $12, $26, 0 # $12 = store pin to withdraw from 
 lw $2, 0($26) # current balance
-sw $1, 17($0) # turn LED 15 on to indicate waiting for pin
+sw $1, 17($0) # turn LED 15 on to indicate waiting for amount to withdraw
 jal collect4DigitNumber
 sw $0, 17($0) # turn LED 15 off to indicate done
-sub $4, $2, $28 #subtract amount to withdraw from current balance
-sw $4, 0($26) #set balance
+addi $4, $28, 0 # $4 = store the amount to withdraw from return value $28
+addi $14, $4, 0 # store amount to withdraw again
 
-jal displayBalance #a0 hasnt been changes, still pin to display
+_determineCoins:
+addi $5, $0, 5
+addi $6, $0, 10
+addi $7, $0, 25
+
+div $8, $4, $7 # $8 = number of quarters
+blt $8, $1, _dimes
+addi $26, $0, 3 #quarter = 3 which is the argument
+_quartersLoop:
+jal servoControl #a0 = 3
+sub $8, $8, $1
+bne $8, $0, _quartersLoop
+
+_dimes:
+mul $9, $8, $7 
+sub $4, $4, $9
+div $10, $4, $6 # $10 = number of dimes
+blt $10, $1, _nickels
+addi $26, $0, 2 #dimes = 2 which is the argument
+_dimesLoop:
+jal servoControl #a0 = 2
+sub $10, $10, $1
+bne $10, $0, _dimesLoop
+
+_nickels:
+mul $9, $10, $6
+sub $4, $4, $9
+div $11, $4, $5 # $11 = number of nickels
+blt $11, $1, _pennies
+addi $26, $0, 1 #nickels = 1 which is the argument
+_nickelsLoop:
+jal servoControl #a0 = 1
+sub $11, $11, $1
+bne $11, $0, _nickelsLoop
+
+_pennies:
+mul $9, $11, $5
+sub $4, $4, $9 # $4 = number of pennies
+blt $4, $1, _endWithdraw
+addi $26, $0, 0 #pennies = 0 which is the argument
+_penniesLoop:
+jal servoControl #a0 = 0
+sub $4, $4, $1
+bne $4, $0, _penniesLoop
+
+_endWithdraw:
+sub $2, $2, $14 # $2 = currnet balance - amount withdrawn
+sw $2, 0($12) #set balance
+addi $26, $12, 0
+jal displayBalance #a0 is now pin to display
 
 lw $2, 0($29)
 lw $3, 1($29)

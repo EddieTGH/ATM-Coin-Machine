@@ -257,23 +257,42 @@ jr $31
 
 
 servoControl: #a0 ($26) = type of coin (0 = p, 1 = n, 2 = d, 3 = q)
-addi $29, $29, -1
+addi $29, $29, -2
 sw $31, 0($29)
+sw $2, 1($29)
+
+sw $1, 23($26) # store 1 at: start address of servos (23) + a0 ($26), so it is the actual servo address
+
+_waitForBackSignal:
+lw $2, 5($26) # load word from: start address of servo back done (5) + a0 ($26), so it is the actual servo back done address
+bne $2, $0, _endServo 
+j _waitForBackSignal
+
+_endServo:
+sw $0, 23($26) # store 0 (go back to initial position) at: 23 (start address of servos) + a0 ($26), so it is the actual servo address
 
 lw $31, 0($29)
-addi $29, $29, 1
+lw $2, 1($29)
+addi $29, $29, 2
 jr $31
 
 
 withdraw: #a0 = pin to withdraw from
-addi $29, $29, -4
+addi $29, $29, -13
 sw $2, 0($29)
-sw $3, 1($29)
-sw $4, 2($29)
-sw $31, 3($29)
+sw $4, 1($29)
+sw $5, 2($29)
+sw $6, 3($29)
+sw $7, 4($29)
+sw $8, 5($29)
+sw $9, 6($29)
+sw $10, 7($29)
+sw $11, 8($29)
+sw $12, 9($29)
+sw $14, 10($29)
+sw $31, 11($29)
+sw $15, 12($29)
 
-#addi $3, $0, 750
-#sw $3, 0($26) #test set their balance
 jal displayBalance # pin hasnt changed
 
 addi $12, $26, 0 # $12 = store pin to withdraw from 
@@ -293,6 +312,11 @@ div $8, $4, $7 # $8 = number of quarters
 blt $8, $1, _dimes
 addi $26, $0, 3 #quarter = 3 which is the argument
 _quartersLoop:
+lw $15, 9($26)
+bne $15, $0, _actualQuarter
+j _quartersLoop
+
+_actualQuarter:
 jal servoControl #a0 = 3
 sub $8, $8, $1
 bne $8, $0, _quartersLoop
@@ -304,6 +328,11 @@ div $10, $4, $6 # $10 = number of dimes
 blt $10, $1, _nickels
 addi $26, $0, 2 #dimes = 2 which is the argument
 _dimesLoop:
+lw $15, 9($26)
+bne $15, $0, _actualDimes
+j _dimesLoop
+
+_actualDimes:
 jal servoControl #a0 = 2
 sub $10, $10, $1
 bne $10, $0, _dimesLoop
@@ -315,6 +344,11 @@ div $11, $4, $5 # $11 = number of nickels
 blt $11, $1, _pennies
 addi $26, $0, 1 #nickels = 1 which is the argument
 _nickelsLoop:
+lw $15, 9($26)
+bne $15, $0, _actualNickels
+j _nickelsLoop
+
+_actualNickels:
 jal servoControl #a0 = 1
 sub $11, $11, $1
 bne $11, $0, _nickelsLoop
@@ -325,6 +359,11 @@ sub $4, $4, $9 # $4 = number of pennies
 blt $4, $1, _endWithdraw
 addi $26, $0, 0 #pennies = 0 which is the argument
 _penniesLoop:
+lw $15, 9($26)
+bne $15, $0, _actualPennies
+j _penniesLoop
+
+_actualPennies:
 jal servoControl #a0 = 0
 sub $4, $4, $1
 bne $4, $0, _penniesLoop
@@ -336,10 +375,19 @@ addi $26, $12, 0
 jal displayBalance #a0 is now pin to display
 
 lw $2, 0($29)
-lw $3, 1($29)
-lw $4, 2($29)
-lw $31, 3($29)
-addi $29, $29, 4 
+lw $4, 1($29)
+lw $5, 2($29)
+lw $6, 3($29)
+lw $7, 4($29)
+lw $8, 5($29)
+lw $9, 6($29)
+lw $10, 7($29)
+lw $11, 8($29)
+lw $12, 9($29)
+lw $14, 10($29)
+lw $31, 11($29)
+lw $15, 12($29)
+addi $29, $29, 13 
 jr $31
 
 

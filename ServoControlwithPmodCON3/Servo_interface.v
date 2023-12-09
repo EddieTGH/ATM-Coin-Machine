@@ -28,7 +28,9 @@ module Servo_interface (
     // input [15:0] SW, 
     input clr,
     input clk,
-    output JC_Signal
+    output JC_Signal,
+    output reg servoBackDone,
+    output reg servoFrontDone
     );
     
     wire [19:0] A_net;
@@ -76,5 +78,46 @@ module Servo_interface (
         .clk(clk),
         .count(A_net)
         );
-        
+
+    reg timerStart = 0;  
+    reg [25:0] counter_reg = 0;  
+    initial begin
+        servoFrontDone = 1'b1;
+        servoBackDone = 1'b1;
+    end
+
+
+    always @(posedge servoCtrl[0]) begin //back position
+        servoBackDone = 1'b0;
+        timerStart = 1'b1;
+        #10;
+        timerStart = 1'b0;
+
+
+    end
+
+
+    always @(negedge servoCtrl[0]) begin //front position
+        servoFrontDone = 1'b0;
+        timerStart = 1'b1;
+        #10;
+        timerStart = 1'b0;
+
+    end
+
+    always @(posedge clk or posedge timerStart) begin
+        if (timerStart) begin
+            counter_reg <= 0;
+        end else if (counter_reg == 30000000) begin
+            if (~servoFrontDone) begin
+                servoFrontDone <= 1'b1;
+            end else if (~servoBackDone) begin
+                servoBackDone <= 1'b1;
+            end
+        end else if (~(servoFrontDone) | ~(servoBackDone)) begin
+            counter_reg <= counter_reg + 1;
+        end
+    end
+
+
 endmodule

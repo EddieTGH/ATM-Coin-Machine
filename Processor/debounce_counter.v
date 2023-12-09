@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module debounce_counter(clock, counter_done, reset);
     input clock, reset;
     output counter_done;

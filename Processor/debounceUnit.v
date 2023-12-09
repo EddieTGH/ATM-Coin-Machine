@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module debounceUnit(buttonNotPressed, acknowledge, clock, debounce);
     input acknowledge;
     input buttonNotPressed, clock;
@@ -25,5 +26,6 @@ module debounceUnit(buttonNotPressed, acknowledge, clock, debounce);
     end
 
     debounce_counter DEBOUNCE(.clock(clock), .counter_done(debounceCounterDone), .reset(reset_counter));
+
 
 endmodule

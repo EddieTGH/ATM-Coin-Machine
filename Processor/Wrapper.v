@@ -111,6 +111,8 @@ module Wrapper (
 									// for keypad
 	wire [3:0] buttonPressed;	    // address 0
 	wire beamBroken1, beamBroken5, beamBroken10, beamBroken25; //address 1,2,3,4
+	wire servo1BackDone, servo5BackDone, servo10BackDone, servo25BackDone; //address 5, 6, 7, 8 DEFAULT = 1
+	wire servo1FrontDone, servo5FrontDone, servo10FrontDone, servo25FrontDone; //address 9, 10, 11, 12 DEFAULT = 1
 
 	wire [31:0] IOReadFinal;
 	mux_16 #(32) IORead(.out(IOReadFinal), //read registers of IO devices
@@ -120,14 +122,14 @@ module Wrapper (
 					.in2(beamBroken5),   //lw from memory 2
 					.in3(beamBroken10),  //lw from memory 3
 					.in4(beamBroken25),  //lw from memory 4
-					.in5(32'b0),
-					.in6(32'b0),
-					.in7(32'b0),
-					.in8(32'b0),
-					.in9(32'b0),
-					.in10(32'b0),
-					.in11(32'b0),
-					.in12(32'b0),
+					.in5(servo1BackDone), //lw from memory 5
+					.in6(servo5BackDone), //lw from memory 6
+					.in7(servo10BackDone), //lw from memory 7
+					.in8(servo25BackDone), //lw from memory 8
+					.in9(servo1FrontDone), //lw from memory 9
+					.in10(servo5FrontDone), //lw from memory 10
+					.in11(servo10FrontDone), //lw from memory 11
+					.in12(servo25FrontDone), //lw from memory 12
 					.in13(32'b0),
 					.in14(32'b0),
 					.in15(32'b0)); 
@@ -146,25 +148,26 @@ module Wrapper (
 	reg [31:0] servoControl_10 = 0;    // address 25
 	reg [31:0] servoControl_25 = 0;    // address 26
 	reg [31:0] acknowledgeBeam = 0;   // address 27
+
 	reg [31:0] defaultWrite = 0; 	  // address default
 
 
 	always @(posedge clock) begin //write registers of IO devices
-		if (memAddr < 32) begin //memory addresses 16-31 are MMIO write
+		if (memAddr < 64) begin //memory addresses 16-64 are MMIO write
 			if (mwe) begin 
-				case(memAddr[4:0])
-					5'b10000: LED14 <= memDataIn[0];                 //LED reg MAPPING sw LED val to memory 16
-					5'b10001: LED15 <= memDataIn[0];                 //LED reg MAPPING sw LED val to memory 17
-					5'b10010: sevenSegment0 <= memDataIn;              //1st digit sw digit val to memory 18
-					5'b10011: sevenSegment1 <= memDataIn;              //2nd digit sw digit val to memory 19
-					5'b10100: sevenSegment2 <= memDataIn;              //3rd digit sw digit val to memory 20
-					5'b10101: sevenSegment3 <= memDataIn;              //4th digit sw digit val to memory 21
-					5'b10110: acknowledgeKey <= memDataIn;              //acknowlege keypad press memory 22
-					5'b10111: servoControl_1 <= memDataIn;              //1st servo control sw ctrl val to memory 23
-					5'b11000: servoControl_5 <= memDataIn;              //1st servo control sw ctrl val to memory 24
-					5'b11001: servoControl_10 <= memDataIn;              //1st servo control sw ctrl val to memory 25
-					5'b11010: servoControl_25 <= memDataIn;              //1st servo control sw ctrl val to memory 26
-					5'b11011: acknowledgeBeam <= memDataIn;              //acknowledge beam break sensor memory 27
+				case(memAddr[5:0])
+					6'b010000: LED14 <= memDataIn[0];                 //LED reg MAPPING sw LED val to memory 16
+					6'b010001: LED15 <= memDataIn[0];                 //LED reg MAPPING sw LED val to memory 17
+					6'b010010: sevenSegment0 <= memDataIn;              //1st digit sw digit val to memory 18
+					6'b010011: sevenSegment1 <= memDataIn;              //2nd digit sw digit val to memory 19
+					6'b010100: sevenSegment2 <= memDataIn;              //3rd digit sw digit val to memory 20
+					6'b010101: sevenSegment3 <= memDataIn;              //4th digit sw digit val to memory 21
+					6'b010110: acknowledgeKey <= memDataIn;              //acknowlege keypad press memory 22
+					6'b010111: servoControl_1 <= memDataIn;              //1st servo control sw ctrl val to memory 23
+					6'b011000: servoControl_5 <= memDataIn;              //1st servo control sw ctrl val to memory 24
+					6'b011001: servoControl_10 <= memDataIn;              //1st servo control sw ctrl val to memory 25
+					6'b011010: servoControl_25 <= memDataIn;              //1st servo control sw ctrl val to memory 26
+					6'b011011: acknowledgeBeam <= memDataIn;              //acknowledge beam break sensor memory 27
 					default: defaultWrite <= 0;
 				endcase
 			end 
@@ -210,10 +213,10 @@ module Wrapper (
     //SERVO STUFF
     wire clear;
     assign clear = 1'b0;
-    Servo_interface servo1 (.servoCtrl(servoControl_1), .clr(clear), .clk(clock), .JC_Signal(JC1) );
-    Servo_interface servo5 (.servoCtrl(servoControl_5), .clr(clear), .clk(clock), .JC_Signal(JC2) );
-    Servo_interface servo10 (.servoCtrl(servoControl_10), .clr(clear), .clk(clock), .JC_Signal(JC3) );
-    Servo_interface servo25 (.servoCtrl(servoControl_25), .clr(clear), .clk(clock), .JC_Signal(JC4) );
+    Servo_interface servo1 (.servoCtrl(servoControl_1), .clr(clear), .clk(clock), .JC_Signal(JC1), .servoBackDone(servo1BackDone), .servoFrontDone(servo1FrontDone) );
+    Servo_interface servo5 (.servoCtrl(servoControl_5), .clr(clear), .clk(clock), .JC_Signal(JC2), .servoBackDone(servo5BackDone), .servoFrontDone(servo5FrontDone) );
+    Servo_interface servo10 (.servoCtrl(servoControl_10), .clr(clear), .clk(clock), .JC_Signal(JC3), .servoBackDone(servo10BackDone), .servoFrontDone(servo10FrontDone) );
+    Servo_interface servo25 (.servoCtrl(servoControl_25), .clr(clear), .clk(clock), .JC_Signal(JC4), .servoBackDone(servo25BackDone), .servoFrontDone(servo25FrontDone) );
     //Servo_interface servo1 (.SW(SW0), .clr(clear), .clk(clock), .JC_Signal(JC1) );
 
 

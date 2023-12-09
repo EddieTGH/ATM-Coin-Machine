@@ -96,12 +96,10 @@ addi $17, $17, 17 # $17 = 17 (used for final memory address of seven segment sto
 
 _waitKeyLoop:
 lw $2, 0($0) # $2 = keypad data
-sw $1, 23($0) #servo store 1
 bne $13, $2, _recordNum # if GOT A NUMBER, branch
 j _waitKeyLoop # else, keep checking for key
 
 _recordNum:
-sw $0, 23($0) #servo store 0
 sw $1, 22($0) # acknowledge that key has been read: store 1 into memory 1
 sw $2, 0($21) # set first key pressed
 sub $21, $21, $1 # subtract 1 from seven segment memory address storing at
@@ -278,7 +276,7 @@ jr $31
 
 
 withdraw: #a0 = pin to withdraw from
-addi $29, $29, -13
+addi $29, $29, -14
 sw $2, 0($29)
 sw $4, 1($29)
 sw $5, 2($29)
@@ -292,6 +290,7 @@ sw $12, 9($29)
 sw $14, 10($29)
 sw $31, 11($29)
 sw $15, 12($29)
+sw $16, 13($29)
 
 jal displayBalance # pin hasnt changed
 
@@ -309,6 +308,7 @@ addi $6, $0, 10
 addi $7, $0, 25
 
 div $8, $4, $7 # $8 = number of quarters
+addi $16, $8, 0
 blt $8, $1, _dimes
 addi $26, $0, 3 #quarter = 3 which is the argument
 _quartersLoop:
@@ -322,9 +322,10 @@ sub $8, $8, $1
 bne $8, $0, _quartersLoop
 
 _dimes:
-mul $9, $8, $7 
+mul $9, $16, $7 
 sub $4, $4, $9
 div $10, $4, $6 # $10 = number of dimes
+addi $16, $10, 0
 blt $10, $1, _nickels
 addi $26, $0, 2 #dimes = 2 which is the argument
 _dimesLoop:
@@ -338,9 +339,10 @@ sub $10, $10, $1
 bne $10, $0, _dimesLoop
 
 _nickels:
-mul $9, $10, $6
+mul $9, $16, $6
 sub $4, $4, $9
 div $11, $4, $5 # $11 = number of nickels
+addi $16, $11, 0
 blt $11, $1, _pennies
 addi $26, $0, 1 #nickels = 1 which is the argument
 _nickelsLoop:
@@ -354,7 +356,7 @@ sub $11, $11, $1
 bne $11, $0, _nickelsLoop
 
 _pennies:
-mul $9, $11, $5
+mul $9, $16, $5
 sub $4, $4, $9 # $4 = number of pennies
 blt $4, $1, _endWithdraw
 addi $26, $0, 0 #pennies = 0 which is the argument
@@ -387,7 +389,8 @@ lw $12, 9($29)
 lw $14, 10($29)
 lw $31, 11($29)
 lw $15, 12($29)
-addi $29, $29, 13 
+lw $16, 13($29)
+addi $29, $29, 14 
 jr $31
 
 
@@ -419,7 +422,7 @@ addi $26, $2, 0 # $26 (a0) for withdraw is the pin
 jal withdraw
 
 _finishDepositWithdraw:
-#j _loopDepositWithdraw
+j _loopDepositWithdraw
 
 finish:
 nop

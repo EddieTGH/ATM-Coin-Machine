@@ -68,7 +68,7 @@ module Wrapper (
 
 
 	// ADD YOUR MEMORY FILE HERE
-	localparam INSTR_FILE = "testServo";
+	localparam INSTR_FILE = "ATM_main";
 	
 	// Main Processing Unit
 	processor CPU(.clock(clock), .reset(reset), 

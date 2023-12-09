@@ -87,20 +87,17 @@ module Servo_interface (
         servoBackDone = 1'b1;
     end
 
-    always @(posedge clk or posedge timerStart or posedge servoCtrl[0] or negedge servoCtrl[0]) begin
+    always @(posedge clk) begin
         if (servoCtrl[0] & (~currPos)) begin //back position
             currPos = ~currPos;
             servoBackDone = 1'b0;
             timerStart = 1'b1;
-            #10;
-            timerStart = 1'b0;
         end else if (~servoCtrl[0] & currPos) begin //front position
             currPos = ~currPos;
             servoFrontDone = 1'b0;
             timerStart = 1'b1;
-            #10;
-            timerStart = 1'b0;
         end else if (timerStart) begin
+            timerStart = 1'b0;
             counter_reg <= 0;
         end else if (counter_reg == 30000000) begin
             if (~servoFrontDone) begin

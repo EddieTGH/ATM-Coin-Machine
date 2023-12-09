@@ -81,32 +81,26 @@ module Servo_interface (
 
     reg timerStart = 0;  
     reg [25:0] counter_reg = 0;  
+    reg currPos = 0;
     initial begin
         servoFrontDone = 1'b1;
         servoBackDone = 1'b1;
     end
 
-
-    always @(posedge servoCtrl[0]) begin //back position
-        servoBackDone = 1'b0;
-        timerStart = 1'b1;
-        #10;
-        timerStart = 1'b0;
-
-
-    end
-
-
-    always @(negedge servoCtrl[0]) begin //front position
-        servoFrontDone = 1'b0;
-        timerStart = 1'b1;
-        #10;
-        timerStart = 1'b0;
-
-    end
-
-    always @(posedge clk or posedge timerStart) begin
-        if (timerStart) begin
+    always @(posedge clk or posedge timerStart or posedge servoCtrl[0] or negedge servoCtrl[0]) begin
+        if (servoCtrl[0] & (~currPos)) begin //back position
+            currPos = ~currPos;
+            servoBackDone = 1'b0;
+            timerStart = 1'b1;
+            #10;
+            timerStart = 1'b0;
+        end else if (~servoCtrl[0] & currPos) begin //front position
+            currPos = ~currPos;
+            servoFrontDone = 1'b0;
+            timerStart = 1'b1;
+            #10;
+            timerStart = 1'b0;
+        end else if (timerStart) begin
             counter_reg <= 0;
         end else if (counter_reg == 30000000) begin
             if (~servoFrontDone) begin

@@ -292,13 +292,15 @@ sw $31, 11($29)
 sw $15, 12($29)
 sw $16, 13($29)
 
-jal displayBalance # pin hasnt changed
-
 addi $12, $26, 0 # $12 = store pin to withdraw from 
+addi $26, $0, 65 # MEMORY ADDRESS 65 SHOULD ALWAYS BE 0
+jal displayBalance # display 0 since balance of memory address 65 should always be 0
+addi $26, $12, 0 # replace
+
 lw $2, 0($26) # current balance
-sw $1, 17($0) # turn LED 15 on to indicate waiting for amount to withdraw
+sw $1, 31($0) # turn on enter witdraw amount LED
 jal collect4DigitNumber
-sw $0, 17($0) # turn LED 15 off to indicate done
+sw $0, 31($0) # turn off enter witdraw amount LED
 addi $4, $28, 0 # $4 = store the amount to withdraw from return value $28
 addi $14, $4, 0 # store amount to withdraw again
 
@@ -401,7 +403,9 @@ addi $1, $1, 1 # $1 = 1 (general purpose 1)
 addi $13, $13, 13 # $13 = 13 (general purpose no key pressed)
 # $26 = a0, $27= a1, $28 = v0
 
+sw $1, 28($0) # turn on enter pin LED
 jal waitForPin # start waiting for a pin
+sw $0, 28($0) # turn off enter pin LED
 
 addi $2, $28, 0 # $2 will hold the pin for future use since we may again modify $v0
 addi $26, $28, 0 # $26 (a0) for display balance is the pin that was returned through $28 ($v0)
@@ -409,12 +413,16 @@ jal displayBalance # display current balance for pin
 
 #MAKE THIS A LOOP
 _loopDepositWithdraw:
+sw $1, 29($0) # turn on choose deposit or withdraw LED
 jal depositOrWithdraw # ask user if want to deposit or withdraw and then collect value to deposit or withdraw
+sw $0, 29($0) # turn off choose deposit or withdraw LED
 
 bne $28, $0, _withdrawing # $v0 = 0 if deposit 1 if withdraw
 _depositing:
 sw $1, 17($0)
+sw $1, 30($0) # turn on deposit coins LED
 jal deposit
+sw $0, 30($0) # turn off deposit coins LED
 j _finishDepositWithdraw
 
 _withdrawing:

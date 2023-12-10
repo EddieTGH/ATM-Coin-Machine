@@ -44,7 +44,8 @@ module Wrapper (
     output reg LED14,
     output reg LED15,
     input  SW0, //switches as SERVO input
-    output JC1, JC2, JC3, JC4 //Servo PWM signal 
+    output JC1, JC2, JC3, JC4, //Servo PWM signal 
+	output JD1, JD2, JD3, JD4 //LEDs for state
 	);
 
 	wire clock, reset;
@@ -148,9 +149,17 @@ module Wrapper (
 	reg [31:0] servoControl_10 = 0;    // address 25
 	reg [31:0] servoControl_25 = 0;    // address 26
 	reg [31:0] acknowledgeBeam = 0;   // address 27
+	reg LEDState1EnterPin = 0;		  //address 28
+	reg LEDState2ChooseDepWith = 0;		  //address 29
+	reg LEDState3DepCoins = 0;		  //address 30
+	reg LEDState4EnterWithAmt = 0;		  //address 31
 
 	reg [31:0] defaultWrite = 0; 	  // address default
 
+	assign JD1 = LEDState1EnterPin;
+	assign JD2 = LEDState2ChooseDepWith;
+	assign JD3 = LEDState3DepCoins;
+	assign JD4 = LEDState4EnterWithAmt;
 
 	always @(posedge clock) begin //write registers of IO devices
 		if (memAddr < 64) begin //memory addresses 16-64 are MMIO write
@@ -168,6 +177,10 @@ module Wrapper (
 					6'b011001: servoControl_10 <= memDataIn;              //1st servo control sw ctrl val to memory 25
 					6'b011010: servoControl_25 <= memDataIn;              //1st servo control sw ctrl val to memory 26
 					6'b011011: acknowledgeBeam <= memDataIn;              //acknowledge beam break sensor memory 27
+					6'b011100: LEDState1EnterPin <= memDataIn[0];              //memory 28
+					6'b011101: LEDState2ChooseDepWith <= memDataIn[0];         //memory 29
+					6'b011110: LEDState3DepCoins <= memDataIn[0];              //memory 30
+					6'b011111: LEDState4EnterWithAmt <= memDataIn[0];          //memory 31
 					default: defaultWrite <= 0;
 				endcase
 			end 

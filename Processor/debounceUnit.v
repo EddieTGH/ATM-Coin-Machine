@@ -38,7 +38,7 @@ module debounceUnit(buttonNotPressed, acknowledge, clock, debounce);
         end else if (timerStart) begin
             timerStart = 1'b0;
             counter_reg = 0;
-        end else if (counter_reg == 15000000) begin
+        end else if (counter_reg == 10000000) begin
             debounce = 1'b0;
         end else if (debounce) begin
             counter_reg <= counter_reg + 1;

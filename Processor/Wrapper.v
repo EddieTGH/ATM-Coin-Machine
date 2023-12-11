@@ -39,7 +39,7 @@ module Wrapper (
     output CF,
     output CG,
     output DP,
-    output [3:0] AN,
+    output [7:0] AN,
     output [13:0] LED, //LED reg MAPPING
     output reg LED14,
     output reg LED15,

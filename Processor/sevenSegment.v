@@ -17,7 +17,7 @@ module sevenSegment (
 input [31:0] seg0, seg1, seg2, seg3;
 input clock;
 output CA, CB, CC, CD, CE, CF, CG, DP;
-output reg [3:0] AN;
+output reg [7:0] AN;
 
 
 wire [15:0] decoded0 = 1 << seg0;
@@ -42,7 +42,7 @@ assign DP = 1'b0;
 
 initial begin
     i = 0;
-    AN[3:0] = 4'b1111;
+    AN[7:0] = 8'b11111111;
 end
 
 wire clk1KHz;

@@ -48,6 +48,7 @@ module Wrapper (
 	output JD1, JD2, JD3, JD4 //LEDs for state
 	);
 
+
 	wire clock, reset;
 	assign clock = clk_30mhzActual;
 	assign reset = BTNU;
@@ -227,7 +228,7 @@ module Wrapper (
     wire clear;
     assign clear = 1'b0;
     Servo_interface servo1 (.servoCtrl(servoControl_1), .clr(clear), .clk(clock), .JC_Signal(JC1), .servoBackDone(servo1BackDone), .servoFrontDone(servo1FrontDone) );
-    Servo_interface servo5 (.servoCtrl(servoControl_5), .clr(clear), .clk(clock), .JC_Signal(JC2), .servoBackDone(servo5BackDone), .servoFrontDone(servo5FrontDone) );
+    Servo_interface_2 servo5 (.servoCtrl(servoControl_5), .clr(clear), .clk(clock), .JC_Signal(JC2), .servoBackDone(servo5BackDone), .servoFrontDone(servo5FrontDone) );
     Servo_interface servo10 (.servoCtrl(servoControl_10), .clr(clear), .clk(clock), .JC_Signal(JC3), .servoBackDone(servo10BackDone), .servoFrontDone(servo10FrontDone) );
     Servo_interface servo25 (.servoCtrl(servoControl_25), .clr(clear), .clk(clock), .JC_Signal(JC4), .servoBackDone(servo25BackDone), .servoFrontDone(servo25FrontDone) );
     //Servo_interface servo1 (.SW(SW0), .clr(clear), .clk(clock), .JC_Signal(JC1) );

@@ -259,6 +259,14 @@ addi $29, $29, -2
 sw $31, 0($29)
 sw $2, 1($29)
 
+bne $26, $0, _regServo
+sw $0, 23($26)
+_waitForBackSignal2:
+lw $2, 9($26) # load word from: start address of servo back done (5) + a0 ($26), so it is the actual servo back done address
+bne $2, $0, _endServo 
+j _waitForBackSignal2
+
+_regServo:
 sw $1, 23($26) # store 1 at: start address of servos (23) + a0 ($26), so it is the actual servo address
 
 _waitForBackSignal:
@@ -267,8 +275,14 @@ bne $2, $0, _endServo
 j _waitForBackSignal
 
 _endServo:
+bne $26, $0, _endDiff
+sw $1, 23($26)
+j _endAgain
+
+_endDiff:
 sw $0, 23($26) # store 0 (go back to initial position) at: 23 (start address of servos) + a0 ($26), so it is the actual servo address
 
+_endAgain:
 lw $31, 0($29)
 lw $2, 1($29)
 addi $29, $29, 2
@@ -293,13 +307,15 @@ sw $15, 12($29)
 sw $16, 13($29)
 
 addi $12, $26, 0 # $12 = store pin to withdraw from 
-addi $26, $0, 65 # MEMORY ADDRESS 65 SHOULD ALWAYS BE 0
-jal displayBalance # display 0 since balance of memory address 65 should always be 0
-addi $26, $12, 0 # replace
 
 lw $2, 0($26) # current balance
 sw $1, 31($0) # turn on enter witdraw amount LED
+_badWithdraw:
+addi $26, $0, 65 # MEMORY ADDRESS 65 SHOULD ALWAYS BE 0
+jal displayBalance # display 0 since balance of memory address 65 should always be 0
+addi $26, $12, 0 # replace
 jal collect4DigitNumber
+blt $2, $28, _badWithdraw
 sw $0, 31($0) # turn off enter witdraw amount LED
 addi $4, $28, 0 # $4 = store the amount to withdraw from return value $28
 addi $14, $4, 0 # store amount to withdraw again
@@ -309,23 +325,23 @@ addi $5, $0, 5
 addi $6, $0, 10
 addi $7, $0, 25
 
-div $8, $4, $7 # $8 = number of quarters
-addi $16, $8, 0
-blt $8, $1, _dimes
-addi $26, $0, 3 #quarter = 3 which is the argument
-_quartersLoop:
-lw $15, 9($26)
-bne $15, $0, _actualQuarter
-j _quartersLoop
+# div $8, $4, $7 # $8 = number of quarters
+# addi $16, $8, 0
+# blt $8, $1, _dimes
+# addi $26, $0, 3 #quarter = 3 which is the argument
+# _quartersLoop:
+# lw $15, 9($26)
+# bne $15, $0, _actualQuarter
+# j _quartersLoop
 
-_actualQuarter:
-jal servoControl #a0 = 3
-sub $8, $8, $1
-bne $8, $0, _quartersLoop
+# _actualQuarter:
+# jal servoControl #a0 = 3
+# sub $8, $8, $1
+# bne $8, $0, _quartersLoop
 
 _dimes:
-mul $9, $16, $7 
-sub $4, $4, $9
+# mul $9, $16, $7 
+# sub $4, $4, $9
 div $10, $4, $6 # $10 = number of dimes
 addi $16, $10, 0
 blt $10, $1, _nickels
@@ -363,7 +379,7 @@ sub $4, $4, $9 # $4 = number of pennies
 blt $4, $1, _endWithdraw
 addi $26, $0, 0 #pennies = 0 which is the argument
 _penniesLoop:
-lw $15, 9($26)
+lw $15, 5($26)
 bne $15, $0, _actualPennies
 j _penniesLoop
 
@@ -402,6 +418,8 @@ addi $29, $29, 4096 # initialize stack pointer to be 4096 (top of RAM)
 addi $1, $1, 1 # $1 = 1 (general purpose 1)
 addi $13, $13, 13 # $13 = 13 (general purpose no key pressed)
 # $26 = a0, $27= a1, $28 = v0
+
+sw $1, 23($0) #change the backwards servo to be proper
 
 sw $1, 28($0) # turn on enter pin LED
 jal waitForPin # start waiting for a pin
